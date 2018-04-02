@@ -1,0 +1,30 @@
+.hidden {
+  display: none;
+}
+
+#error-content {
+  height: 90%;
+  margin: 2em 2em 2em 2em;
+  border: .5em solid #c87a79;
+  transition: background-color .2s ease-out;
+  text-align: center;
+}
+
+#sidebar-content
+{
+  height: 90%;
+  margin: 2em 2em 2em 2em;
+  border: .5em solid #76fc79;
+  transition: background-color .2s ease-out;
+  text-align: center;
+}
+
+#tbl-progress 
+{
+	color: #000000;
+}
+
+#tbl-progress thead
+{
+	font-weight: bold;
+}

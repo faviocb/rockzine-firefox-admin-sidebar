@@ -1,0 +1,25 @@
+{
+
+  "manifest_version": 2,
+  "name": "rockzine-admin",
+  "version": "1.0",
+
+  "description": "Herramientas para Rockzine admin",
+
+  "icons": {
+    "48": "icons/rockzine-48.png"
+  },
+  
+   "sidebar_action": {
+    "default_icon": "icons/rockzine-32.png",
+    "default_title": "Rockzine admin",
+    "default_panel": "sidebar/rockzine-admin.html"
+  },
+  
+  
+  
+  "permissions": [
+	"tabs","activeTab", "webRequest",  "webRequestBlocking", "https://www.facebook.com/"
+  ]
+  
+}
