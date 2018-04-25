@@ -29,35 +29,48 @@ function reportImportSuccess(result) {
 
 //==================================================================================================
 
-function ImportAndSave(usersPool, formData){
+async function  ImportAndSave(usersPool, formData){
 
-	browser.tabs.query({ active: true, currentWindow: true })
-	.then(
-		(tabs) => {
-			browser.tabs.sendMessage(tabs[0].id, {
-				requestType: usersPool,
-				targetPageId: ZONAJOVEN_PAGE_ID,
-				facebookUrl: FACEBOOK_URL,
+	var offset = 0;
 
-				__a: formData.__a[0],
-				__be: formData.__be[0],
-				__dyn: formData.__dyn[0],
-				__pc: formData.__pc[0],
-				__req: formData.__req[0],
-				__rev: formData.__rev[0],
-				__spin_b: formData.__spin_b[0],
-				__spin_r: formData.__spin_r[0],
-				__spin_t: formData.__spin_t[0],
-				__user: formData.__user[0],
-				fb_dtsg: formData.fb_dtsg[0],
-				jazoest: formData.jazoest[0]
 
-			})
-				.then(reportImportSuccess)
-				.catch(reportImportError);
-		}
-	)
-	.catch(reportErrorBeforeImport);
+	do 
+	{
+
+			await browser.tabs.query({ active: true, currentWindow: true })
+			.then(
+				(tabs) => {
+					browser.tabs.sendMessage(tabs[0].id, {
+						requestType: usersPool,
+						targetPageId: ZONAJOVEN_PAGE_ID,
+						facebookUrl: FACEBOOK_URL,
+						offset:offset,
+						__a: formData.__a[0],
+						__be: formData.__be[0],
+						__dyn: formData.__dyn[0],
+						__pc: formData.__pc[0],
+						__req: formData.__req[0],
+						__rev: formData.__rev[0],
+						__spin_b: formData.__spin_b[0],
+						__spin_r: formData.__spin_r[0],
+						__spin_t: formData.__spin_t[0],
+						__user: formData.__user[0],
+						fb_dtsg: formData.fb_dtsg[0],
+						jazoest: formData.jazoest[0]
+		
+					})
+						.then(reportImportSuccess)
+						.catch(reportImportError);
+				}
+			)
+			.catch(reportErrorBeforeImport);
+
+	
+		offset = offset + 100;
+	}
+	while (offset <1000);
+
+
 }
 
 //==================================================================================================

@@ -84,7 +84,7 @@
 
 		return new Promise(function (resolve, reject) {
 
-			var url = message.facebookUrl + message.requestType + '&page_id=' + message.targetPageId + '&offset=0&limit=100&dpr=2';
+			var url = message.facebookUrl + message.requestType + '&page_id=' + message.targetPageId + '&offset=' + message.offset + '&limit=100&dpr=2';
 
 			var data = {
 				__user: message.__user,
