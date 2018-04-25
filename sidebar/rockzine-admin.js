@@ -16,23 +16,29 @@ var flagPEOPLE_BANNED_FROM_PAGE = false;
 
 
 
-    function reportErrorExport(error) {
-      console.log(`Could not Export: ${error}`);
+    function reportErrorBeforeExport(error) {
+	  console.info('98) __________ Rockzine :(		error before connecting to Facebook page');
+	  console.info(error);
     }
 
+    function reportExportError(error) {
+		console.info('97) __________ Rockzine :(		error getting data from Facebook');
+		console.info(error);
+	}
+
+	function reportExportSuccess(result) {
+		console.info('04) __________ Rockzine :)		Success getting data from Facebook');
+		console.info(result);
+	}
+
 	function captureFacebookParameters(e) {
-		
-		//console.log(e);
-		
+	
 
 		if(!flagPEOPLE_WHO_LIKE_THIS_PAGE){
 			if(e.url.includes(FACEBOOK_URL + PEOPLE_WHO_LIKE_THIS_PAGE )){
 				flagPEOPLE_WHO_LIKE_THIS_PAGE = true;
-				console.log('=====> ' + PEOPLE_WHO_LIKE_THIS_PAGE) ;
-				//Export(PEOPLE_WHO_LIKE_THIS_PAGE);
-				
-				console.log(e);
-				
+
+				console.info('03) __________ Rockzine :)	captured =====> ' + PEOPLE_WHO_LIKE_THIS_PAGE) ;
 				
 				var formData = e.requestBody.formData;
 				
@@ -57,10 +63,12 @@ var flagPEOPLE_BANNED_FROM_PAGE = false;
 											  fb_dtsg : formData.fb_dtsg[0],
 											  jazoest : formData.jazoest[0]											  
 											  
-											});
+											})
+											.then(reportExportSuccess)
+											.catch(reportExportError);
 								}
 						  )
-						.catch(reportErrorExport);				
+						.catch(reportErrorBeforeExport);				
 				
 				
 			}
@@ -71,7 +79,7 @@ var flagPEOPLE_BANNED_FROM_PAGE = false;
 		if(!flagPEOPLE_WHO_FOLLOW_THIS_PAGE){
 			if(e.url.includes(FACEBOOK_URL + PEOPLE_WHO_FOLLOW_THIS_PAGE )){
 				flagPEOPLE_WHO_FOLLOW_THIS_PAGE = true;
-				console.log('=====> ' + PEOPLE_WHO_FOLLOW_THIS_PAGE) ;
+				console.info('=====> ' + PEOPLE_WHO_FOLLOW_THIS_PAGE) ;
 				//Export(PEOPLE_WHO_FOLLOW_THIS_PAGE);
 				
 				browser.tabs.query({active: true, currentWindow: true})
@@ -82,7 +90,7 @@ var flagPEOPLE_BANNED_FROM_PAGE = false;
 											});
 								}
 						  )
-						.catch(reportErrorExport);								
+						.catch(reportErrorBeforeExport);								
 
 						
 			}
@@ -92,7 +100,7 @@ var flagPEOPLE_BANNED_FROM_PAGE = false;
 		if(!flagPAGES_THAT_LIKE_THIS_PAGE){
 			if(e.url.includes(FACEBOOK_URL + PAGES_THAT_LIKE_THIS_PAGE )){
 				flagPAGES_THAT_LIKE_THIS_PAGE = true;
-				console.log('=====> ' + PAGES_THAT_LIKE_THIS_PAGE) ;
+				console.info('=====> ' + PAGES_THAT_LIKE_THIS_PAGE) ;
 				//Export(PAGES_THAT_LIKE_THIS_PAGE);
 				
 				browser.tabs.query({active: true, currentWindow: true})
@@ -103,7 +111,7 @@ var flagPEOPLE_BANNED_FROM_PAGE = false;
 											});
 								}
 						  )
-						.catch(reportErrorExport);							
+						.catch(reportErrorBeforeExport);							
 						
 			}
 		}
@@ -112,7 +120,7 @@ var flagPEOPLE_BANNED_FROM_PAGE = false;
 		if(!flagPEOPLE_BANNED_FROM_PAGE){
 			if(e.url.includes(FACEBOOK_URL + PEOPLE_BANNED_FROM_PAGE )){
 				flagPEOPLE_BANNED_FROM_PAGE = true;
-				console.log('=====> ' + PEOPLE_BANNED_FROM_PAGE) ;
+				console.info('=====> ' + PEOPLE_BANNED_FROM_PAGE) ;
 				//Export(PEOPLE_BANNED_FROM_PAGE);
 				
 				browser.tabs.query({active: true, currentWindow: true})
@@ -123,7 +131,7 @@ var flagPEOPLE_BANNED_FROM_PAGE = false;
 											});
 								}
 						  )
-						.catch(reportErrorExport);							
+						.catch(reportErrorBeforeExport);							
 						
 			}
 		}
@@ -133,9 +141,7 @@ var flagPEOPLE_BANNED_FROM_PAGE = false;
 
 function listenForEvents() {
 	
-	
-	
-	console.log('02) __________ Listening');
+	console.info('02) __________ Rockzine :)	Listening');
 	
 	
 	 browser.webRequest.onBeforeRequest.addListener(
@@ -157,16 +163,14 @@ function reportExecuteScriptError(error) {
   document.querySelector("#sidebar-content").classList.add("hidden");
   document.querySelector("#error-content").classList.remove("hidden");	
 	
-  console.log(`99) __________ Error al rockzinify: ${error.message}`);
+  console.info(`99) __________ Rockzine :( 		Error al rockzinify: ${error.message}`);
 }
 
 
 
-console.log('01) __________ Begin');
+console.info('01) __________ Rockzine :)	Begin');
 
  
 browser.tabs.executeScript({file: "/content_scripts/rockzinify.js"})
  .then(listenForEvents, reportExecuteScriptError)
 
-
- 
