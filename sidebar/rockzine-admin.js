@@ -1,4 +1,6 @@
 const FACEBOOK_URL = "https://www.facebook.com/pages/admin/people_and_other_pages/entquery/?query_edge_key=";
+const ROCKZINE_URL = "http://localhost:5000/api/facebook";
+
 
 const PEOPLE_WHO_LIKE_THIS_PAGE = "PEOPLE_WHO_LIKE_THIS_PAGE";
 const PEOPLE_WHO_FOLLOW_THIS_PAGE = "PEOPLE_WHO_FOLLOW_THIS_PAGE";
@@ -10,15 +12,85 @@ const ZONAJOVEN_PAGE_ID = 165113237807;
 var flagFacebookParametersCaptured = false;
 
 
-//==================================================================================================
+//============================================ Export helpers  ======================================================
+
+
+function sendDataMultipart(data, url) 
+{
+
+	return new Promise(function (resolve, reject) {
+
+
+		var oData = {};
+		oData.contentType = "multipart\/form-data";
+		oData.technique = 3;
+		oData.receiver = url;
+		oData.status = 0;
+		oData.segments = [];
+		
+		for (var nItem = 0; nItem < data.length; nItem++)
+		{
+			oData.segments.push("Content-Disposition: form-data; name=\"" + data[nItem].name + "\"\r\n\r\n" + data[nItem].value + "\r\n");
+		}
+		
+		/* the AJAX request... */
+		var oAjaxReq = new XMLHttpRequest();
+		oAjaxReq.submittedData = oData;
+		
+		oAjaxReq.addEventListener('load', function (event) {
+
+			if (this.status == 200) {
+				resolve(this.response);					// Success :)
+			}
+			else {
+				reject({
+					errorStatus: this.status,
+					errorStatusText: this.statusText,
+					errorText: this.responseText,
+					targetUrl: url
+				});										// Failure returned by Server :(
+			}
+		});
+
+
+		// Define what happens in case of error
+		oAjaxReq.addEventListener('error', function (event) {
+			reject({
+				errorStatus: -1,
+				errorStatusText: '',
+				errorText: 'An error ocurred when trying to send data to server',
+				targetUrl: url
+			});											// Failure, God knows why :(
+		});
+
+
+		/* method is POST */
+		oAjaxReq.open("post", oData.receiver, true);
+
+			 
+		/* enctype is multipart/form-data */
+		var sBoundary = "---------------------------" + Date.now().toString(16);
+		oAjaxReq.setRequestHeader("Content-Type", "multipart\/form-data; boundary=" + sBoundary);
+		oAjaxReq.send("--" + sBoundary + "\r\n" + oData.segments.join("--" + sBoundary + "\r\n") + "--" + sBoundary + "--\r\n");
+
+
+	});
+	
+}
+
+
+
+
+
+//============================================ Import helpers  ======================================================
 
 function reportErrorBeforeImport(error) {
 	console.info('98) __________ Rockzine :(		error before connecting to Facebook page');
 	console.info(error);
 }
 
-function reportImportError(error) {
-	console.info('97) __________ Rockzine :(		error getting data from Facebook');
+function reportImportOrExportError(error) {
+	console.info('97) __________ Rockzine :(		error getting data from Facebook or exporting to Rockzine');
 	console.info(error);
 }
 
@@ -59,8 +131,15 @@ async function  ImportAndSave(usersPool, formData){
 						jazoest: formData.jazoest[0]
 		
 					})
-						.then(reportImportSuccess)
-						.catch(reportImportError);
+						//.then(reportImportSuccess)
+						.then((result)=> {
+							reportImportSuccess (result);
+							return sendDataMultipart([{name: 'usersPool', value : usersPool}, 
+														{name: 'offset', value : offset}, 
+														{name: 'rawFacebookResponse', value :result}], 
+														ROCKZINE_URL);
+						})
+						.catch(reportImportOrExportError);
 				}
 			)
 			.catch(reportErrorBeforeImport);
