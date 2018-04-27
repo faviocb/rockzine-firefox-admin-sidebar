@@ -12,7 +12,20 @@ const ZONAJOVEN_PAGE_ID = 165113237807;
 var flagFacebookParametersCaptured = false;
 
 
+
+
+
 //============================================ Export helpers  ======================================================
+
+function reportExportError(error) {
+	console.info('96) __________ Rockzine :(		error exporting to Rockzine');
+	console.info(error);
+}
+
+function reportExportSuccess(result) {
+	console.info('05) __________ Rockzine :)		Success exporting data to Rockzine');
+	console.info(result);
+}
 
 
 function sendDataMultipart(data, url) 
@@ -89,8 +102,8 @@ function reportErrorBeforeImport(error) {
 	console.info(error);
 }
 
-function reportImportOrExportError(error) {
-	console.info('97) __________ Rockzine :(		error getting data from Facebook or exporting to Rockzine');
+function reportImportError(error) {
+	console.info('97) __________ Rockzine :(		error getting data from Facebook');
 	console.info(error);
 }
 
@@ -112,7 +125,7 @@ async function  ImportAndSave(usersPool, formData){
 			await browser.tabs.query({ active: true, currentWindow: true })
 			.then(
 				(tabs) => {
-					browser.tabs.sendMessage(tabs[0].id, {
+					return browser.tabs.sendMessage(tabs[0].id, {
 						requestType: usersPool,
 						targetPageId: ZONAJOVEN_PAGE_ID,
 						facebookUrl: FACEBOOK_URL,
@@ -137,9 +150,11 @@ async function  ImportAndSave(usersPool, formData){
 							return sendDataMultipart([{name: 'usersPool', value : usersPool}, 
 														{name: 'offset', value : offset}, 
 														{name: 'rawFacebookResponse', value :result}], 
-														ROCKZINE_URL);
+														ROCKZINE_URL)
+														.then(reportExportSuccess)
+														.catch(reportExportError);
 						})
-						.catch(reportImportOrExportError);
+						.catch(reportImportError);
 				}
 			)
 			.catch(reportErrorBeforeImport);
